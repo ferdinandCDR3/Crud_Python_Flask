@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Recherche</title>
+  <link rel="stylesheet" href="styles.css">
+  <script>
+    function recupererValeursEtEnvoyer() {
+      let numeroMatricule = document.getElementById("numeroMatricule").value; 
+      let info = document.getElementById("info"); 
+      let data = {
+        mat: numeroMatricule
+      };
+
+      // Convertir l'objet en JSON
+      let utilisateurJSON = JSON.stringify(data);
+      
+      fetch('http://127.0.0.1:5000/edit', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: utilisateurJSON
+      })
+      .then(response => {
+          if (!response.ok) {
+              throw new Error('Erreur réseau');
+          }
+          return response.json();
+      })
+      .then(data => {
+          console.log('Réponse du serveur :', data);
+          info.style.display = "block";
+          btn.style.display = "none";
+          document.getElementById('nom').value = data.nom;
+          //document.getElementById('matricule').value = data.numeroMatricule;
+          document.getElementById('prenoms').value = data.prenom;
+          document.getElementById('datenaiss').value = data.date_naiss;
+          document.getElementById('adresse').value = data.adresse;
+          document.getElementById('mention').value = data.mention;
+          document.getElementById('parcours').value = data.parcours;
+          document.getElementById('niveau').value = data.niveau;
+          document.getElementById('domaine').value = data.domaine;
+          document.getElementById('sexe').value = data.sexe;
+
+          document.getElementById("nom").innerText = data.nom;
+          // document.getElementById("matricule").innerText = data.numeroMatricule;
+          document.getElementById('prenoms').innerText = data.Prenom;
+          document.getElementById('datenaiss').innerText = data.date_naiss;
+          document.getElementById('adresse').innerText = data.adresse;
+          document.getElementById('mention').innerText = data.mention;
+          document.getElementById('parcours').innerText = data.parcours;
+          document.getElementById('niveau').innerText = data.niveau;
+          document.getElementById('domaine').innerText = data.domaine;
+          document.getElementById('sexe').innerText = data.sexe;
+      })
+      .catch(error => {
+          console.error('Erreur lors de la communication avec le serveur :', error);
+      });
+    }
+    function modifier() {
+      let numeroMatricule = document.getElementById("numeroMatricule").value; 
+      let nom = document.getElementById('nom').value;
+      let prenom = document.getElementById('prenoms').value;
+      let datenaiss = document.getElementById('datenaiss').value;
+      let adresse = document.getElementById('adresse').value;
+      let mention = document.getElementById('mention').value;
+      let parcours = document.getElementById('parcours').value;
+      let niveau = document.getElementById('niveau').value;
+      let domaine = document.getElementById('domaine').value;
+      let sexe = document.getElementById('sexe').value;
+      var data = {
+        "numeroMatricule": numeroMatricule, 
+        "nom": nom, 
+        "prenom": prenom, 
+        "datenaiss": datenaiss, 
+        "adresse": adresse, 
+        "mention": mention, 
+        "parcours": parcours, 
+        "niveau": niveau, 
+        "domaine": domaine,
+        "sexe": sexe
+          }
+          fetch('http://127.0.0.1:5000/upd_student', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ data })
+          })
+          .then(response => response.json())
+          .then(data => {
+            console.log('Réponse reçue :', data);
+            info.style.display = "block";
+            msg.style.display = "block";
+          })
+          .catch((error) => {
+            console.error('Erreur :', error);
+          });
+
+    }
+
+    function supprimer() {
+      let numeroMatricule = document.getElementById("numeroMatricule").value; 
+      var data = {
+        "numeroMatricule": numeroMatricule
+          }
+          fetch('http://127.0.0.1:5000/delete_student', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ data })
+          })
+          .then(response => response.json())
+          .then(data => {
+            console.log('Réponse reçue :', data);
+            info.style.display = "block";
+            msg_del.style.display = "block";
+          })
+          .catch((error) => {
+            console.error('Erreur :', error);
+          }); 
+    }
+  </script>
+</head>
+<body>
+  <div class="affichage">
+    <form id="formulaire" align="center">
+      <table class="tab_mat" border=0>
+        <br />
+        <br />
+        <br />
+        <br />
+        <tr>
+    			<td align='center' colspan=3>
+        			<h2><b>Formulaire de Recherche</b></h2>
+        		</td>
+        	</tr>
+    		<tr>
+    			<td>
+        			<label for="numeroMatricule" align="left"><b>Numéro Matricule:</b></label>
+        		</td>
+        		<td>
+        			<input type="text" id="numeroMatricule" name="numeroMatricule"  align="left" required>
+        		</td>
+        	</tr>
+      </table>
+      <div id="info" class="hide_rec">
+        <table border=0>
+          <tr>
+            <td>      
+                <label for="nom" align="left"><b>Nom:</b></label>
+              </td>
+              <td>
+                <input type="text" id="nom" name="nom">
+              </td>
+            </tr>
+            <tr>
+            <td>
+                <label for="prenoms" align="left"><b>Prénom(s):</b></label>
+              </td>
+              <td>
+                <input type="text" id="prenoms" name="prenoms">
+              </td>
+            </tr>
+            <tr>
+            <td>
+                <label for="dateNaiss" align="left"><b>Date de naissance:</b></label>
+              </td>
+              <td>
+                <input type="text" id="datenaiss" name="datenaiss">
+              </td>
+            </tr>
+            <tr>
+            <td>
+                <label for="adresse" align="left"><b>Adresse:</b></label>
+              </td>
+              <td>
+                <input type="text" id="adresse" name="adresse">
+              </td>
+            </tr>
+            <tr>
+            <td>
+                <label for="mention" align="left"><b>Mention:</b></label>
+              </td>
+              <td>
+                <input type="text" id="mention" name="mention">
+              </td>
+            </tr>
+            <tr>
+            <td>
+                <label for="parcours" align="left"><b>Parcours:</b></label>
+              </td>
+              <td>
+                <input type="text" id="parcours" name="parcours">
+              </td>
+            </tr>
+            <tr>
+              <td>
+                  <label for="sexe" align="left"><b>Sexe:</b></label>
+                </td>
+                <td>
+                  <input type="text" id="sexe" name="sexe">
+                </td>
+              </tr>
+            <tr>
+            <td>
+                <label for="niveau" align="left"><b>Niveau:</b></label>
+              </td>
+              <td>
+                <input type="text" id="niveau" name="niveau">
+              </td>
+            </tr>
+            <tr>
+            <td>
+                <label for="domaine" align="left"><b>Domaine de compétence souhaitée:</b></label>
+              </td>
+              <td>
+                <input type="text" id="domaine" name="domaine">
+              </td>
+            </tr>
+            <tr>
+            <td align='center' colspan=3>    
+              <button type="button" onclick="modifier()">Modifier</button>&nbsp;&nbsp;&nbsp;<button type="button" onclick="supprimer()">Supprimer</button>
+            </td>
+          </tr>
+          <tr>
+            <td align='center' colspan=3>
+              <div id="msg" class="hide_msg">    
+                <p style="color: green"></span><b>Modification effectuée avec succès</b></p>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td align='center' colspan=3>
+              <div id="msg_del" class="hide_msg">    
+                <p style="color: green"></span><b>Suppression effectuée avec succès</b></p>
+              </div>
+            </td>
+          </tr>
+        </table>
+    </div>
+    <button type="button" onclick="recupererValeursEtEnvoyer()" id="btn">rechercher</button>
+    </form>
+  </div>
+</body>
+</html>

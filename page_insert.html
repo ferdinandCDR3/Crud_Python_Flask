@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>All Widgets</title>
+  <script>
+    function clique() {
+      var liste = document.getElementById("maListe");    
+      var valeurSelectionnee = liste.options[liste.selectedIndex].value;
+      var numeroMatricule = document.getElementById('numeroMatricule').value;
+      var info1 = document.getElementById("info1");
+      var info = document.getElementById("info");      
+      var estCochee_check = '';
+      var estCochee_radio = '';
+      if (document.getElementById("caseCochee1").checked){
+        estCochee_check = '1';
+        if (document.getElementById("radbtn1").checked){
+          estCochee_radio = '1';
+        }
+        else if (document.getElementById("radbtn2").checked){
+          estCochee_radio = '2';
+        }
+      }
+      else if (document.getElementById("caseCochee2").checked){
+        estCochee_check = '2';
+        
+      }
+      const valeurCase = { caseCochee: estCochee_check };
+      const valeurListe = { select: valeurSelectionnee };
+      const valeurRadio = { radbtn: estCochee_radio };
+      fetch('http://127.0.0.1:5000/rechercher-utilisateur?numeroMatricule=' + numeroMatricule)
+        .then(response => response.json())
+        .then(data => {
+          document.getElementById('nom').value = data.nom;
+          document.getElementById('prenoms').value = data.prenoms;
+          document.getElementById('adresse').value = data.adresse;
+          document.getElementById("nom").innerText = data.nom;
+          document.getElementById("prenoms").innerText = data.prenoms;
+          document.getElementById("adresse").innerText = data.adresse;
+          info1.style.display = "block";
+        })
+        .catch(error => {
+          console.error('Une erreur s\'est produite', error);
+        });
+
+      
+      fetch('http://127.0.0.1:5000', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ caseCochee: valeurCase, radbtn: valeurRadio, estCochee: valeurListe  })
+      })
+      .then(response => response.json())
+      .then(data => {
+        console.log('Réponse reçue :', data);
+        info.style.display = "block";
+        document.getElementById("selected").innerText = valeurSelectionnee;
+        document.getElementById("check").innerText = estCochee_check;
+        document.getElementById("rad").innerText = estCochee_radio;
+      })
+      .catch((error) => {
+        console.error('Erreur :', error);
+      });
+    }
+  </script>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="affichage">
+    <h2>Formulaire</h2>
+    <form id="formulaire">
+        <label for="numeroMatricule">Numéro Matricule:</label>
+        <input type="text" id="numeroMatricule" name="numeroMatricule" required>
+        <br>
+        <div id="info1" class="hide">
+        <label for="nom">Nom:</label>
+        <input type="text" id="nom" name="nom" readonly>
+        <br>
+        <label for="prenoms">Prénoms:</label>
+        <input type="text" id="prenoms" name="prenoms" readonly>
+        <br>
+        <label for="adresse">Adresse de domicile:</label>
+        <input type="text" id="adresse" name="adresse" readonly>
+      </div>
+        <br>
+        Case à cocher Numéro 1 <input type="checkbox" id="caseCochee1">
+        Case à cocher Numéro 2 <input type="checkbox" id="caseCochee2">
+        <br>
+        Bouton radio Numéro 1 <input type="radio" id="radbtn1">
+        Bouton radio Numéro 2 <input type="radio" id="radbtn2">
+        <br>
+        <select id="maListe">
+          <option value="Valeur 1">Valeur 1</option>
+          <option value="Valeur 2">Valeur 2</option>
+          <option value="Valeur 3">Valeur 3</option>
+        </select>
+      <br>
+      <div id="info" class="hide">
+        <p id="result_check">La case cochée est numéro :<span id="check">0</span></p>
+        <p id="result_rad">Le bouton radio choisie est numéro :<span id="rad">0</span></p>
+        <p id="result_liste">La valeur sélectionée dans la liste déroulante est :<span id="selected">0</span></p>
+    </div>
+    <br>
+    <br>
+    <br>
+    <button type="button" onclick="clique()">Valider</button>
+    </form>
+  </div>
+</body>
+</html>

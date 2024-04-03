@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Insertion</title>
+  <link rel="stylesheet" href="styles.css">
+  <script>
+    function init() {
+		var niveau = document.getElementById("niveau");    
+		var niveauSelectionnee = niveau.options[niveau.selectedIndex].value;
+		var numeroMatricule = document.getElementById('numeroMatricule').value;
+		var nom = document.getElementById('nom').value;
+		var prenom = document.getElementById('prenoms').value;
+		var date_naiss = document.getElementById('date_naiss').value;
+		var adresse = document.getElementById('adresse').value;
+
+		var estCochee_check = '';
+		var estCochee_radio_mention = '';
+		var estCochee_radio_parcours = '';
+		var estCochee_radio_sexe = '';
+		if (document.getElementById('devops').checked){
+			estCochee_check = 'Devops';	
+		}
+		if (document.getElementById('cybersec').checked){
+			estCochee_check = estCochee_check+',Cybersecurite';	
+		}
+		if (document.getElementById('check_ia').checked){
+			estCochee_check = estCochee_check+',IA';	
+		}
+		if (document.getElementById('developpeur').checked){
+			estCochee_check = estCochee_check+',Developpeur';	
+		}
+		if (document.getElementById("ia").checked){
+			estCochee_radio_mention = 'IA';
+		}
+		if (document.getElementById("garcon").checked){
+			estCochee_radio_sexe = 'G';
+		}
+		if (document.getElementById("fille").checked){
+		estCochee_radio_sexe = 'F';
+		}
+		else if (document.getElementById("informatique").checked){
+			estCochee_radio_mention = 'informatique';
+			if (document.getElementById("sr").checked){
+			estCochee_radio_parcours = 'SR';
+			}
+			else if (document.getElementById("gb").checked){
+			estCochee_radio_parcours = 'GB';
+			}
+			else if (document.getElementById("ig").checked){
+			estCochee_radio_parcours = 'IG';
+			}
+		}
+
+      const valeurCase = { caseCochee: estCochee_check };
+      const valeurListe = { select: niveauSelectionnee };
+      const mentionRadio = { mentionbtn: estCochee_radio_mention };
+	  const parcoursRadio = { parcoursbtn: estCochee_radio_parcours }; 
+	  const sexe = { sexe: estCochee_radio_sexe };
+	  var data = {
+        "caseCochee": valeurCase, 
+		"mentionbtn": mentionRadio, 
+		"parcoursbtn": parcoursRadio, 
+		"niveau": valeurListe, 
+		"numeroMatricule": numeroMatricule, 
+		"nom": nom, 
+		"prenom": prenom, 
+		"date_naiss": date_naiss, 
+		"adresse": adresse,
+		"sexe": sexe
+      }
+      
+      fetch('http://127.0.0.1:5000/add_student', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ data })
+      })
+      .then(response => response.json())
+      .then(data => {
+        console.log('Réponse reçue :', data);
+		tab_insert.style.display = "none";
+		info.style.display = "block";
+		let rows = "";
+          data.forEach((students) => {
+            rows += `
+              <tr>
+				<td>${students.numeroMatricule}</td>
+                <td>${students.nom} </td>
+                <td>${students.prenom}</td>
+                <td>${students.date_naiss}</td>
+				<td>${students.adresse}</td>
+				<td>${students.mention}</td>
+				<td>${students.parcours}</td>
+				<td>${students.niveau}</td>
+				<td>${students.domaine}</td>
+                <td>${students.sexe}</td>
+              </tr>
+            `;
+          });
+        document.getElementById("tbody").innerHTML = rows;
+		
+		// document.querySelector("thead").innerHTML = headers;
+      })
+      .catch((error) => {
+        console.error('Erreur :', error);
+      });
+    }
+	// document.getElementById('valider').addEventListener('click', init);
+  </script>
+</head>
+<body>
+  <div class="affichage">
+    <form id="formulaire">
+    	<table id="tab_insert" border=0>
+			<br />
+    		<tr>
+    			<td align='center' colspan=3>
+        			<h2><b>Formulaire d'inscription</b></h2>
+        		</td>
+        	</tr>
+    		<tr>
+    			<td>
+        			<label for="numeroMatricule"><b>Numéro Matricule:</b></label>
+        		</td>
+        		<td>
+        			<input type="text" id="numeroMatricule" name="numeroMatricule" required>
+        		</td>
+        	</tr>
+        	<tr>
+    			<td>      
+        			<label for="nom"><b>Nom:</b></label>
+        		</td>
+        		<td>
+        			<input type="text" id="nom" name="nom">
+        		</td>
+        	</tr>
+        	<tr>
+    			<td>
+        			<label for="prenoms"><b>Prénom(s):</b></label>
+        		</td>
+        		<td>
+        			<input type="text" id="prenoms" name="prenoms">
+        		</td>
+        	</tr>
+        	<tr>
+    			<td>
+        			<label for="dateNaiss"><b>Date de naissance:</b></label>
+        		</td>
+        		<td>
+        			<input type="date" id="date_naiss" name="date_naiss">
+      			</td>
+        	</tr>
+        	<tr>
+    			<td>
+        			<label for="adresse"><b>Adresse:</b></label>
+        		</td>
+        		<td>
+        			<input type="text" id="adresse" name="adresse">
+      			</td>
+        	</tr>
+        	<tr>
+    			<td>
+        			<label for="mention"><b>Mention:</b></label>
+        		</td>
+        		<td>
+        			<input type="radio" id="ia" name="mention" value="ia"><b>IA</b>
+				&nbsp;&nbsp;&nbsp;
+        			<input type="radio" id="informatique" name="mention" value="ianformatique"><b>Informatique</b>
+      			</td>
+        	</tr>
+        	<tr rowspan=3>
+    			<td>
+        			<label for="parcours"><b>Parcours:</b></label>
+        		</td>
+        		<td>
+        			<input type="radio" id="sr" name="parcours" value="sr"><b>SR</b>
+        			&nbsp;&nbsp;
+        			<input type="radio" id="gb" name="parcours" value="gb"><b>GB</b>
+        			&nbsp;&nbsp;
+        			<input type="radio" id="ig" name="parcours" value="ig"><b>IG</b>
+      			</td>
+        	</tr>
+			<tr rowspan=3>
+    			<td>
+        			<label for="sexe"><b>Sexe:</b></label>
+        		</td>
+        		<td>
+        			<input type="radio" id="garcon" name="sexe" value="G"><b>Garçon</b>
+        			&nbsp;
+        			<input type="radio" id="fille" name="sexe" value="F"><b>Fille</b>
+      			</td>
+        	</tr>
+        	<tr>
+    			<td>
+        			<label for="niveau"><b>Niveau:</b></label>
+        		</td>
+        		<td>
+        			<select id="niveau" name="niveau">
+				  <option value="L1">L1</option>
+				  <option value="L2">L2</option>
+				  <option value="L3">L3</option>
+				  <option value="M1">M1</option>
+				  <option value="M2">M2</option>
+				</select>
+      			</td>
+        	</tr>
+        	<tr rowspan=2>
+    			<td>
+        			<label for="domaine"><b>Domaine de compétence souhaitée:</b></label>
+        		</td>
+        		<td>
+        			<input type="checkbox" id="devops" name="check" value="DevOps" class="domaine_devops">DevOps
+        			<br />
+        			<input type="checkbox" id="cybersec" name="check" value="Cybersécurité" class="domaine_cybersec">Cybersécurité
+      			</td>
+      			<td>
+        			<input type="checkbox" id="check_ia" name="check" value="IA" class="domaine_ia">IA
+        			<br />
+        			<input type="checkbox" id="developpeur" name="check" value="Développeur" class="domaine_dev">Développeur
+      			</td>
+        	</tr>
+        	<tr>
+    			<td align='center' colspan=3>    
+    				<button type="button" onclick="init()">Valider</button>
+    			</td>
+    		</tr>
+    </table>
+    </form>
+	<div id="info" class="hide_list">
+		<h1 align="center">Liste des Etudiants</h1>
+    <table border=1>
+        <thead>
+			<tr>
+			<td><b>Matricule</b></td>
+			<td><b>Nom</b></td>
+			<td><b>Prénom(s)</b></td>
+			<td><b>Date de naissance</b></td>
+			<td><b>Adresse</b></td>
+			<td><b>Mention</b></td>
+			<td><b>Parcours</b></td>
+			<td><b>Niveau</b></td>
+			<td><b>Domaine</b></td>
+			<td><b>Sexe</b></td>
+		</tr>
+        </thead>
+        <tbody id="tbody">
+        </tbody>
+    </table>
+	</div>
+  </div>
+</body>
+</html>

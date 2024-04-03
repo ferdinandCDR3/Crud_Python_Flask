@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.min.js" integrity="sha512-L0Shl7nXXzIlBSUUPpxrokqq4ojqgZFQczTYlGjzONGTDAcLremjwaWv5A+EDLnxhQzY5xUZPWLOLqYRkY0Cbw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <title>Statistique</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script>
+    function init() {
+		var niveau = document.getElementById("niveau");    
+		var niveauSelectionnee = niveau.options[niveau.selectedIndex].value;
+		var estCochee_check = '';
+		var estCochee_radio_mention = '';
+		var estCochee_radio_parcours = '';
+		var estCochee_radio_sexe = '';
+		if (document.getElementById('devops').checked){
+			estCochee_check = 'Devops';	
+		}
+		if (document.getElementById('cybersec').checked){
+			estCochee_check = estCochee_check+',Cybersecurite';	
+		}
+		if (document.getElementById('check_ia').checked){
+			estCochee_check = estCochee_check+',IA';	
+		}
+		if (document.getElementById('developpeur').checked){
+			estCochee_check = estCochee_check+',Developpeur';	
+		}
+		if (document.getElementById("ia").checked){
+			estCochee_radio_mention = 'IA';
+		}
+		if (document.getElementById("garcon").checked){
+			estCochee_radio_sexe = 'G';
+		}
+		if (document.getElementById("fille").checked){
+		estCochee_radio_sexe = 'F';
+		}
+		else if (document.getElementById("informatique").checked){
+			estCochee_radio_mention = 'informatique';
+			if (document.getElementById("sr").checked){
+			estCochee_radio_parcours = 'SR';
+			}
+			else if (document.getElementById("gb").checked){
+			estCochee_radio_parcours = 'GB';
+			}
+			else if (document.getElementById("ig").checked){
+			estCochee_radio_parcours = 'IG';
+			}
+		}
+
+      const valeurCase = { caseCochee: estCochee_check };
+      const valeurListe = { select: niveauSelectionnee };
+      const mentionRadio = { mentionbtn: estCochee_radio_mention };
+	  const parcoursRadio = { parcoursbtn: estCochee_radio_parcours }; 
+	  const sexe = { sexe: estCochee_radio_sexe };
+	  var data = {
+        "caseCochee": valeurCase, 
+        "mentionbtn": mentionRadio, 
+        "parcoursbtn": parcoursRadio, 
+        "niveau": valeurListe, 
+        "sexe": sexe
+      }
+      
+      fetch('http://127.0.0.1:5000/stat', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ data })
+      })
+      .then(response => response.json())
+      .then(data => {
+        console.log('Réponse reçue :', data);
+        const ctx = document.getElementById('myChart');
+        // lert(data['count(*)'])
+        autre = 360 - data['count(*)']
+        new Chart(ctx, {
+          type: 'pie',
+          data: {
+            labels: ['Réponse', 'Autres'],
+            datasets: [{
+              label: '# of Votes',
+              data: [data['count(*)'], autre],
+              borderWidth: 1
+            }]
+          },
+          options: {
+            scales: {
+              y: {
+                beginAtZero: true
+              }
+            }
+          }
+        });
+		
+		// document.querySelector("thead").innerHTML = headers;
+      })
+      .catch((error) => {
+        console.error('Erreur :', error);
+      });
+    }
+	// document.getElementById('valider').addEventListener('click', init);
+  </script>
+</head>
+<body>
+    <div>
+        <canvas id="myChart"></canvas>
+      </div>
+      <div class="affichage">
+        <form id="formulaire">
+          <table id="tab_insert">
+            <tr>
+              <td align='center' colspan=3>
+                  <h2><b>Statistique</b></h2>
+                </td>
+              </tr>
+              <tr rowspan=2>
+              <td>
+                  <label for="mention"><b>Mention:</b></label>
+                </td>
+                <td>
+                  <input type="radio" id="ia" name="mention" value="ia"><b>IA</b>
+                  &nbsp;&nbsp;
+                  <input type="radio" id="informatique" name="mention" value="ianformatique"><b>Informatique</b>
+                </td>
+              </tr>
+              <tr rowspan=3>
+              <td>
+                  <label for="parcours"><b>Parcours:</b></label>
+                </td>
+                <td>
+                  <input type="radio" id="sr" name="parcours" value="sr"><b>SR</b>
+                  &nbsp;
+                  <input type="radio" id="gb" name="parcours" value="gb"><b>GB</b>
+                  &nbsp;
+                  <input type="radio" id="ig" name="parcours" value="ig"><b>IG</b>
+                </td>
+              </tr>
+          <tr rowspan=3>
+              <td>
+                  <label for="sexe"><b>Sexe:</b></label>
+                </td>
+                <td>
+                  <input type="radio" id="garcon" name="sexe" value="G"><b>Garçon</b>
+                  &nbsp;
+                  <input type="radio" id="fille" name="sexe" value="F"><b>Fille</b>
+                </td>
+              </tr>
+              <tr>
+              <td>
+                  <label for="niveau"><b>Niveau:</b></label>
+                </td>
+                <td>
+                  <select id="niveau" name="niveau">
+              <option value="L1">L1</option>
+              <option value="L2">L2</option>
+              <option value="L3">L3</option>
+              <option value="M1">M1</option>
+              <option value="M2">M2</option>
+            </select>
+                </td>
+              </tr>
+              <tr rowspan=2>
+              <td>
+                  <label for="domaine"><b>Domaine de compétence souhaitée:</b></label>
+                </td>
+                <td>
+                  <input type="checkbox" id="devops" name="check" value="DevOps" class="domaine_devops">DevOps
+                  <br />
+                  <input type="checkbox" id="cybersec" name="check" value="Cybersécurité" class="domaine_cybersec">Cybersécurité
+                </td>
+                <td>
+                  <input type="checkbox" id="check_ia" name="check" value="IA" class="domaine_ia">IA
+                  <br />
+                  <input type="checkbox" id="developpeur" name="check" value="Développeur" class="domaine_dev">Développeur
+                </td>
+              </tr>
+              <tr>
+              <td align='center' colspan=3>    
+                <button type="button" onclick="init()">Valider</button>
+              </td>
+            </tr>
+        </table>
+       </form>
+       </div>
+     
+</body>
+</html>

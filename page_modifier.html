@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Recherche</title>
+  <script>
+    function rechercherUtilisateur() {
+      var numeroMatricule = document.getElementById('numeroMatricule').value;
+      console.log(numeroMatricule);
+      var info = document.getElementById("info");
+      fetch('http://127.0.0.1:5000/rechercher-utilisateur?numeroMatricule=' + numeroMatricule)
+        .then(response => response.json())
+        .then(data => {
+          document.getElementById('nom').value = data.nom;
+          document.getElementById('prenoms').value = data.prenoms;
+          document.getElementById('adresse').value = data.adresse;
+          document.getElementById("nom").innerText = data.nom;
+          document.getElementById("prenoms").innerText = data.prenoms;
+          document.getElementById("adresse").innerText = data.adresse;
+          info.style.display = "block";
+        })
+        .catch(error => {
+          console.error('Une erreur s\'est produite', error);
+        });
+    }
+  </script>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="affichage_rec">
+    <h2>Formulaire de Recherche</h2>
+    <form id="formulaire">
+      <label for="numeroMatricule">Numéro Matricule:</label>
+      <input type="text" id="numeroMatricule" name="numeroMatricule" required>
+      <br>
+      <div id="info" class="hide">
+        <label for="nom">Nom:</label>
+        <input type="text" id="nom" name="nom" readonly>
+        <br>
+        <label for="prenoms">Prénoms:</label>
+        <input type="text" id="prenoms" name="prenoms" readonly>
+        <br>
+        <label for="adresse">Adresse de domicile:</label>
+        <input type="text" id="adresse" name="adresse" readonly>
+    </div>
+    <button type="button" onclick="rechercherUtilisateur()">Rechercher</button>
+    </form>
+  </div>
+</body>
+</html>
